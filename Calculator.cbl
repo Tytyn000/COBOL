@@ -16,7 +16,7 @@
        linkage section.
                                                                              
        procedure division.
-       DISPLAY "EN CAS DE VALEUR DECIMAL UTILSER , POUR LA SEPARATION"  
+       DISPLAY "EN CAS DE VALEUR DECIMAL UTILSER , POUR LA SEPARATION" 
        DISPLAY 'Pour faire une racine carré "SquareRoot"'
        DISPLAY 'Pour un calcul utilisant PI "PI"'
        DISPLAY "La valeur actuelle de PI est de : " PI
