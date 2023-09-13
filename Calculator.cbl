@@ -9,7 +9,7 @@
        working-storage section.
        01 Number1 PIC S9(6)V9(15).
        01 Number2 PIC S9(6)V9(15).
-       01 Resultat PIC S9(9)V9(15).
+       01 Resultat PIC S9(15)V9(15).
        01 PI PIC 9(1)V9(15) VALUE 3,141592653589793.
        01 Signe PIC X(1) VALUE SPACE.
        77 UserResponse PIC X(16).
