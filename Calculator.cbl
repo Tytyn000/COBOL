@@ -10,15 +10,18 @@
        01 Number1 PIC S9(6)V9(15).
        01 Number2 PIC S9(6)V9(15).
        01 Resultat PIC S9(15)V9(15).
+       01 LoopNumber PIC 9(6).
        01 PI PIC 9(1)V9(15) VALUE 3,141592653589793.
        01 Signe PIC X(1) VALUE SPACE.
        77 UserResponse PIC X(16).
+       77 UserReponseForPercentage PIC X(12).
        linkage section.
                                                                              
        procedure division.
        DISPLAY "EN CAS DE VALEUR DECIMAL UTILSER , POUR LA SEPARATION" 
        DISPLAY 'Pour faire une racine carré "SquareRoot"'
        DISPLAY 'Pour un calcul utilisant PI "PI"'
+       DISPLAY 'Pour utiliser un calcul avec des pourcentages "TVA"'
        DISPLAY "La valeur actuelle de PI est de : " PI
        DISPLAY "Sinon ignorez et appuyez sur ENTER"
        ACCEPT UserResponse.
@@ -66,6 +69,51 @@
                STOP RUN
            END-IF
            STOP RUN
+       ELSE IF UserResponse = "TVA" THEN
+           DISPLAY "Pour un ajout de pourcentage = '+ Percentage'"
+           DISPLAY "Pour un enlèvement de pourcentage = '- Percentage'"
+           DISPLAY "La valeur de la TVA est de 20 / 10 / 5,5 / 2,1"
+           DISPLAY "Est sensible à la casse, faux résultat possible"
+           ACCEPT UserReponseForPercentage
+           IF UserReponseForPercentage = "+ Percentage" THEN
+               DISPLAY "Entrez la valeur de base pour ce calcul"
+               DISPLAY "Si cette valeur est PI écrivez 0"
+               ACCEPT Number1
+               IF Number1 = 0
+                   MOVE PI TO Number1
+               END-IF
+               DISPLAY "Entrez la valeur en pourcentage a ajouter"
+               DISPLAY "Si cette valeur est PI écrivez 0"
+               ACCEPT Number2
+               IF Number2 = 0
+                   MOVE PI TO Number2
+               END-IF
+               COMPUTE Resultat = Number1 * (Number2 / 100)
+               COMPUTE Resultat = Number1 + Resultat
+               DISPLAY "Le résultat est de : " Resultat " pourcent "
+               STOP RUN
+           ELSE IF UserReponseForPercentage = "- Percentage" THEN
+               DISPLAY "Entrez la valeur de base pour ce calcul"
+               DISPLAY "Si cette valeur est PI écrivez 0"
+               ACCEPT Number1
+               IF Number1 = 0 THEN
+                   MOVE PI TO Number1
+               END-IF
+               DISPLAY "Entrez la valeur en pourcentage a soustraire"
+               DISPLAY "Si cette valeur est PI écrivez 0" 
+               ACCEPT Number2
+               IF Number2 = 0 THEN
+                   MOVE PI TO Number2
+               END-IF
+               COMPUTE Resultat = Number1 * (Number2 / 100)
+               COMPUTE Resultat = Number1 - Resultat
+               DISPLAY "Le résultat est de : " Resultat " pourcent "
+               STOP RUN
+           ELSE 
+               DISPLAY "Signe non reconnu"
+               STOP RUN
+           END-IF
+           STOP RUN
        END-IF.
        DISPLAY "Entrez le premier nombre(si négatif ajouter - devant)" 
        ACCEPT Number1.
@@ -101,6 +149,3 @@
        DISPLAY "Le résultat est de " Resultat.
        STOP RUN.
        end program Calculator.
-       *>Début le 10/09/2023
-       *>Temps estimée 8/9 Heures
-       *>Fin le 12/09/2023 21H29
