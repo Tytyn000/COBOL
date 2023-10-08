@@ -1,0 +1,31 @@
+le end programme doit etre suivi d'une ligne sans espace et rien d'écrit
+la syntaxe verbueuse du cobol sert d'auto documentation
+ne pas oublier en haut IDENTIFICATION DIVISION
+pour faire un com *>
+limitée a 80 caractères
+les lignes 73 a 80 entre dans la zone de non compilation et peuvent être considérer comme une erreur
+fermer les if par un end-if
+lors d'une condition if/else if mettre THEN a la fin de la ligne de la condition
+pour récuperer une racine carré FUNCTION SQRT (le nombre d'ou on veut la racine)
+ACCEPT NomDeLaVariable permet de récuperer une réponse de l'utilisateur dans la console
+ROUNDED permet d'arrondir un chiffre et evtire les résultat non arrondi lors de la troncature
+ON SIZE ERROR execute le code en dessous en cas d'erreur dans le calcul(ex 0 / 0)
+STOP RUN arrête immédiatement le programme mais ne clear pas la console 
+PIC S9(6)V9(15) VALUE 265,45456456.
+S9 défini que ca supporte les chiffres et ca supporte les -/+ devant pour indiquer le signe 
+(6) défini le nombre max de caractères que peut supporter le chiffre avant la troncature
+V défini la séparation entre les entiers et les décimaux
+(15) nombre max de caractères
+chaque caractères d'une variables non compressée est stockées sur un octet chacun
+entre 300 et 1000 mot clés COBOL réservée
+beaucoup sont des abréviations (ex PIC pour PICTURE)
+VALUE est la valeur donnée
+CURRENT-DATE retourne une chaine 
+    1 à 4 : année
+    5 à 6 : mois
+    7 à 8 : jour
+    9 à 10 : heure
+    11 à 12 : minutes
+    13 à 14 : secondes
+    15 à 16 : millisecondes
+    17 à 21 : informations sur le fuseau horaire
