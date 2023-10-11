@@ -36,28 +36,24 @@
 
        01 UserResponse PIC X(3) VALUE NULL.
        01 NbOfPlayer PIC 9(1).
+       01 NbOfPlayerRemaining PIC 9(1).
+
+       01 BJOfP1 PIC 9(1) VALUE 0.
+       01 BJOfP2 PIC 9(1) VALUE 0.
+       01 BJOfP3 PIC 9(1) VALUE 0.
+       01 BJOfP4 PIC 9(1) VALUE 0.
+
+       01 BetOfP1 PIC 9(18) VALUE 0.
+       01 BetOfP2 PIC 9(18) VALUE 0.
+       01 BetOfP3 PIC 9(18) VALUE 0.
+       01 BetOfP4 PIC 9(18) VALUE 0.  
        linkage section.
 
        procedure division.
            *> premier tour de distribution
            DISPLAY "L'as vaut exclusivement 11 ici"
-           DISPLAY "***************************************************"
            DISPLAY "Il faut avoir exclusivement plus que le croupier"
-           DISPLAY "Sans dépasser 21 pour gagner"
-           DISPLAY "***************************************************"
-           DISPLAY "Si vous avez moins ou autant que le croupier et si"
-           DISPLAY "Le croupier ne dépasse pas 21 vous perdez"
-           DISPLAY "***************************************************"
-           DISPLAY "Merci de ne pas tenir compte des"
-           DISPLAY "Possible fautes d'orthographes"
-           DISPLAY "***************************************************"
-           DISPLAY "Merci de ne pas tenir compte de la possible"
-           DISPLAY "Mal organisation des saut et affichage de certains"
-           DISPLAY "Elements graphiques"
-           DISPLAY "***************************************************"
-           DISPLAY "                                                   "
-           DISPLAY "Bienvenue dans le jeu du BlackJack"
-           DISPLAY "***************************************************"
+           DISPLAY "Pour gagner le tout sans dépasser 21"
            DISPLAY "Entrez le nombre de joueur 1 à 4"
            ACCEPT NbOfPlayer
            IF NbOfPlayer <= 0 THEN
@@ -67,8 +63,25 @@
               DISPLAY "Trop de joueur"
               STOP RUN 
            END-IF.
+           MOVE NbOfPlayer TO NbOfPlayerRemaining
+           DISPLAY "Début du premier tour"
            IF NbOfPlayer >= 1 THEN
-              DISPLAY "Début du premier tour"
+              DISPLAY "Entrez la mise du joueur 1"
+              ACCEPT BetOfP1
+           END-IF.
+           IF NbOfPlayer >= 2 THEN
+              DISPLAY "Entrez la mise du joueur 2"
+              ACCEPT BetOfP2
+           END-IF.
+           IF NbOfPlayer >= 3 THEN
+              DISPLAY "Entrez la mise du joueur 3"
+              ACCEPT BetOfP3
+           END-IF.
+           IF NbOfPlayer >= 4 THEN
+              DISPLAY "Entrez la mise du joueur 4"
+              ACCEPT BetOfP4
+           END-IF.
+           IF NbOfPlayer >= 1 THEN
               DISPLAY "                                                "
               DISPLAY "************************************************"
               DISPLAY 'Entrez "1" pour distribuez une carte au joueur 1'
@@ -139,10 +152,18 @@
            DISPLAY "Fin du premier tour"
            DISPLAY "***************************************************"
            DISPLAY UserResponse
-           DISPLAY "Valeur du joueur 1 : " P1Value
-           DISPLAY "Valeur du joueur 2 : " P2Value
-           DISPLAY "Valeur du joueur 3 : " P3Value
-           DISPLAY "Valeur du joueur 4 : " P4Value
+           IF NbOfPlayer >= 1 THEN
+              DISPLAY "Valeur du joueur 1 : " P1Value
+           END-IF.
+           IF NbOfPlayer >= 2 THEN
+              DISPLAY "Valeur du joueur 2 : " P2Value
+           END-IF.
+           IF NbOfPlayer >= 3 THEN
+              DISPLAY "Valeur du joueur 3 : " P3Value
+           END-IF.
+           IF NbOfPlayer >= 4 THEN
+              DISPLAY "Valeur du joueur 4 : " P4Value
+           END-IF.
            DISPLAY "Valeur du croupier : " DealerValue
            DISPLAY UserResponse
            DISPLAY "***************************************************"
@@ -171,21 +192,35 @@
                  DISPLAY "                                             "
                  DISPLAY "*********************************************"
                  DISPLAY "Le joueur 1 perd"
+                 DISPLAY "Le joueur 1 perd sa mise"
                  DISPLAY "*********************************************"
                  DISPLAY "                                             "
                  MOVE 0 TO P1State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 IF NbOfPlayerRemaining = 0 THEN
+                    DISPLAY "Plus de joueur"
+                    STOP RUN 
+                 END-IF
               ELSE IF P1Value = 21 THEN
                  DISPLAY UserResponse
                  DISPLAY "*********************************************"
                  DISPLAY "Score du joueur 1 : " P1Value
                  DISPLAY "BlackJack du joueur 1"
+                 DISPLAY "Le joueur 1 fait * 1.5 sur sa mise"
+                 COMPUTE BetOfP1 = BetOfP1 * 1.5
+                 DISPLAY "Mise récupérer par le joueur 1 : "
+                 DISPLAY '*********************************************'
+                 DISPLAY BetOfP1
+                 DISPLAY "*********************************************"
                  MOVE 0 TO P1State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 MOVE 1 TO BJOfP1
                  DISPLAY "*********************************************"
                  DISPLAY UserResponse
               END-IF
               DISPLAY UserResponse
            END-IF.
-           
+
            IF NbOfPlayer >= 2 THEN
               DISPLAY "************************************************"
               DISPLAY 'Entrez "2" pour distribuez une carte au joueur 2'
@@ -194,52 +229,85 @@
                  STOP RUN
               END-IF
               MOVE SPACES TO UserResponse
-              PERFORM CardsCalculation
-              COMPUTE P2Value = P2Value + CardToPick
-              DISPLAY "Valeur du joueur 2 : " P2Value
+              IF NbOfPlayer >= 2 THEN
+                 PERFORM CardsCalculation
+                 COMPUTE P2Value = P2Value + CardToPick
+                 DISPLAY "Valeur du joueur 2 : " P2Value
+              END-IF
               IF P2Value > 21 THEN
                  DISPLAY "                                             "
                  DISPLAY "*********************************************"
                  DISPLAY "Le joueur 2 perd"
+                 DISPLAY "Le joueur 2 perd sa mise"
                  DISPLAY "*********************************************"
                  DISPLAY "                                             "
                  MOVE 0 TO P2State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 IF NbOfPlayerRemaining = 0 THEN
+                    DISPLAY "Plus de joueur"
+                    STOP RUN 
+                 END-IF
               ELSE IF P2Value = 21 THEN
                  DISPLAY UserResponse 
                  DISPLAY "*********************************************"
                  DISPLAY "Score du joueur 2 : " P2Value
                  DISPLAY "BlackJack du joueur 2"
+                 DISPLAY "Le joueur 2 fait * 1.5 sur sa mise"
+                 COMPUTE BetOfP2 = BetOfP2 * 1.5
+                 DISPLAY "Mise récupérer par le joueur 2 : "
+                 DISPLAY "*********************************************"
+                 DISPLAY BetOfP2
+                 DISPLAY "*********************************************"
                  MOVE 0 TO P2State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 MOVE 1 TO BJOfP2
                  DISPLAY "*********************************************"
                  DISPLAY UserResponse
               END-IF
-           DISPLAY UserResponse
+              DISPLAY UserResponse
            END-IF.
            
            IF NbOfPlayer >= 3 THEN
               DISPLAY "************************************************"
               DISPLAY 'Entrez "3" pour distribuer une carte au joueur 3'
+              MOVE SPACES TO UserResponse
               ACCEPT UserResponse
               IF NOT UserResponse = 3 THEN
                  STOP RUN
               END-IF.
               MOVE SPACES TO UserResponse
-              PERFORM CardsCalculation
-              COMPUTE P3Value = P3Value + CardToPick
-              DISPLAY "Valeur du joueur 3 : " P3Value
+              IF NbOfPlayer >= 3 THEN
+                 PERFORM CardsCalculation
+                 COMPUTE P3Value = P3Value + CardToPick
+                 DISPLAY "Valeur du joueur 3 : " P3Value
+              END-IF
               IF P3Value > 21 THEN
                  DISPLAY "                                             "
                  DISPLAY "*********************************************"
                  DISPLAY "Le joueur 3 perd"
+                 DISPLAY "Le joueur 3 perd sa mise"
                  DISPLAY "*********************************************"
                  DISPLAY "                                             "
                  MOVE 0 TO P3State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 IF NbOfPlayerRemaining = 0 THEN
+                    DISPLAY "Plus de joueur"
+                    STOP RUN 
+                 END-IF
               ELSE IF P3Value = 21 THEN
                  DISPLAY UserResponse
                  DISPLAY "*********************************************"
                  DISPLAY "Score du joueur 3 : " P3Value
                  DISPLAY "BlackJack du joueur 3"
+                 DISPLAY "Le joueur 3 fait * 1.5 sur sa mise"
+                 COMPUTE BetOfP3 = BetOfP3 * 1.5
+                 DISPLAY "Mise récuperer par le joueur 3 : "
+                 DISPLAY "*********************************************"
+                 DISPLAY BetOfP3
+                 DISPLAY "*********************************************"
                  MOVE 0 TO P3State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 MOVE 1 TO BJOfP3
                  DISPLAY "*********************************************"
                  DISPLAY UserResponse
               END-IF
@@ -254,22 +322,38 @@
                  STOP RUN
               END-IF
               MOVE SPACES TO UserResponse
-              PERFORM CardsCalculation.
-              COMPUTE P4Value = P4Value + CardToPick
-              DISPLAY "Valeur du joueur 4 : " P4Value
+              IF NbOfPlayer >= 4 THEN
+                 PERFORM CardsCalculation
+                 COMPUTE P4Value = P4Value + CardToPick
+                 DISPLAY "Valeur du joueur 4 : " P4Value
+              END-IF
               IF P4Value > 21 THEN
                  DISPLAY "                                             "
                  DISPLAY "*********************************************"
                  DISPLAY "Le joueur 4 perd"
+                 DISPLAY "Le joueur 4 perd sa mise"
                  DISPLAY "*********************************************"
                  DISPLAY "                                             "
                  MOVE 0 TO P4State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 IF NbOfPlayerRemaining = 0 THEN
+                    DISPLAY "Plus de joueur"
+                    STOP RUN 
+                 END-IF
               ELSE IF P4Value = 21 THEN
                  DISPLAY UserResponse
                  DISPLAY "*********************************************"
                  DISPLAY "Score du joueur 4 : " P4Value
                  DISPLAY "BlackJack du joueur 4"
+                 DISPLAY "Le joueur 4 fait * 1.5 sur sa mise"
+                 COMPUTE BetOfP4 = BetOfP4 * 1.5
+                 DISPLAY "Mise récuperer par le joueur 4 : "
+                 DISPLAY "*********************************************"
+                 DISPLAY BetOfP4
+                 DISPLAY "*********************************************"
                  MOVE 0 TO P4State
+                 SUBTRACT 1 FROM NbOfPlayerRemaining
+                 MOVE 1 TO BJOfP4
                  DISPLAY "*********************************************"
                  DISPLAY UserResponse
               END-IF
@@ -283,7 +367,7 @@
               STOP RUN
            END-IF.
            MOVE SPACES TO UserResponse
-           PERFORM CardsCalculation.
+           PERFORM CardsCalculation
            COMPUTE DealerValue = DealerValue + CardToPick
            DISPLAY "Valeur du croupier caché"
 
@@ -291,10 +375,18 @@
            DISPLAY "Fin du second tour"
            DISPLAY "***************************************************"
            DISPLAY UserResponse
-           DISPLAY "Valeur du joueur 1 : " P1Value
-           DISPLAY "Valeur du joueur 2 : " P2Value
-           DISPLAY "Valeur du joueur 3 : " P3Value
-           DISPLAY "Valeur du joueur 4 : " P4Value
+           IF NbOfPlayer >= 1 THEN
+              DISPLAY "Valeur du joueur 1 : " P1Value
+           END-IF.
+           IF NbOfPlayer >= 2 THEN
+              DISPLAY "Valeur du joueur 2 : " P2Value
+           END-IF.
+           IF NbOfPlayer >= 3 THEN
+              DISPLAY "Valeur du joueur 3 : " P3Value
+           END-IF.
+           IF NbOfPlayer >= 4 THEN
+              DISPLAY "Valeur du joueur 4 : " P4Value
+           END-IF.
            DISPLAY "Valeur du croupier : " "Valeur cachée"
            DISPLAY UserResponse
            DISPLAY "***************************************************"
@@ -415,6 +507,10 @@
               DISPLAY 'Pour ne pas tirer pas de carte entrez "0"'
               ACCEPT UserResponse
               IF UserResponse = 1 THEN
+                 IF NbOfPlayerRemaining = 0 THEN
+                    DISPLAY "Plus de joueur"
+                    STOP RUN 
+                 END-IF
                  PERFORM CardsCalculation
                  COMPUTE P1Value = P1Value + CardToPick
                  DISPLAY "                                             "
@@ -429,6 +525,11 @@
                     DISPLAY "******************************************"
                     DISPLAY "                                          "
                     MOVE 0 TO P1State
+                    SUBTRACT 1 FROM NbOfPlayerRemaining
+                    IF NbOfPlayerRemaining = 0 THEN
+                       DISPLAY "Plus de joueur"
+                       STOP RUN 
+                    END-IF
                     DISPLAY "******************************************"
                     IF P2State = 1 AND NbOfPlayer >= 2 THEN
                        PERFORM Player2Turn
@@ -461,7 +562,12 @@
                   GO TO Player1Turn
                END-IF. 
                DISPLAY "                                              ".
+
            Player2Turn.
+           IF NbOfPlayerRemaining = 0 THEN
+              DISPLAY "Plus de joueur"
+              STOP RUN 
+           END-IF
               MOVE SPACE TO UserResponse
               DISPLAY "************************************************"
               DISPLAY "Tour du joueur 2"
@@ -482,6 +588,11 @@
                     DISPLAY "******************************************"
                     DISPLAY "                                          "
                     MOVE 0 TO P2State
+                    SUBTRACT 1 FROM NbOfPlayerRemaining
+                    IF NbOfPlayerRemaining = 0 THEN
+                       DISPLAY "Plus de joueur"
+                       STOP RUN 
+                    END-IF
                     IF P3State = 1 AND NbOfPlayer >= 3 THEN
                        GO TO Player3Turn
                        ELSE 
@@ -506,6 +617,10 @@
               END-IF.
               DISPLAY "                                               ".
            Player3Turn. 
+           IF NbOfPlayerRemaining = 0 THEN
+              DISPLAY "Plus de joueur"
+              STOP RUN 
+           END-IF
               MOVE SPACE TO UserResponse
               DISPLAY "************************************************"
               DISPLAY "Tour du joueur 3"
@@ -523,6 +638,11 @@
                  DISPLAY "                                             "
                  IF P3Value > 21 THEN
                     MOVE 0 TO P3State
+                    SUBTRACT 1 FROM NbOfPlayerRemaining
+                    IF NbOfPlayerRemaining = 0 THEN
+                       DISPLAY "Plus de joueur"
+                       STOP RUN 
+                    END-IF
                     DISPLAY "Le joueur 3 perd"
                     DISPLAY "                                          "
                     IF P4State = 1 AND NbOfPlayer >= 4 THEN
@@ -541,6 +661,10 @@
               END-IF.
               DISPLAY "                                               ".
            Player4Turn.
+           IF NbOfPlayerRemaining = 0 THEN
+              DISPLAY "Plus de joueur"
+              STOP RUN 
+           END-IF
               MOVE SPACE TO UserResponse
               DISPLAY "************************************************"
               DISPLAY "Tour du joueur 4"
@@ -558,13 +682,23 @@
                  DISPLAY "                                             "
                  IF P4Value > 21 THEN
                     MOVE 0 TO P4State
+                    SUBTRACT 1 FROM NbOfPlayerRemaining
+                    IF NbOfPlayerRemaining = 0 THEN
+                       DISPLAY "Plus de joueur"
+                       STOP RUN 
+                    END-IF
                     GO TO DealerTurn
                  END-IF
               GO TO Player4Turn
               ELSE IF UserResponse = 0 THEN
                  GO TO DealerTurn
               END-IF.
+
            DealerTurn.
+           IF NbOfPlayerRemaining = 0 THEN
+              DISPLAY "Plus de joueur"
+              STOP RUN 
+           END-IF
               MOVE SPACE TO UserResponse
               DISPLAY "Le croupier retourne ses cartes"
               DISPLAY "La somme total du croupier est de : " DealerValue
@@ -580,106 +714,124 @@
               END-PERFORM.
               DISPLAY "Le croupier ne pioche plus"
               DISPLAY "Valeur total du croupier : " DealerValue
+              *>Ca marche :) possible bug jsp why sur le player 3
               IF DealerValue > 21 THEN
                  DISPLAY "Le croupier perd"
+                 IF NbOfPlayer >= 1 THEN
+                    DISPLAY "Le joueur 1 fait * 2 sur sa mise"
+                    COMPUTE BetOfP1 = BetOfP1 * 2
+                    DISPLAY "Mise récuperer par le joueur 1"
+                    DISPLAY "******************************************"
+                    DISPLAY BetOfP1
+                    DISPLAY "******************************************"
+                 END-IF
+                 IF NbOfPlayer >= 2 THEN
+                    DISPLAY "Le joueur 2 fait * 2 sur sa mise"
+                    COMPUTE BetOfP2 = BetOfP2 * 2
+                    DISPLAY "Mise récuperer par le joueur 2"
+                    DISPLAY "******************************************"
+                    DISPLAY BetOfP2
+                    DISPLAY "******************************************"
+                 END-IF
+                 IF NbOfPlayer >= 3 THEN
+                    DISPLAY "Le joueur 3 fait * 2 sur sa mise"
+                    COMPUTE BetOfP3 = BetOfP3 * 2
+                    DISPLAY "Mise récuperer par le joueur 3"
+                    DISPLAY "******************************************"
+                    DISPLAY BetOfP3
+                    DISPLAY "******************************************"
+                 END-IF
+                 IF NbOfPlayer >= 4 THEN
+                    DISPLAY "Le joueur 4 fait * 2 sur sa mise"
+                    COMPUTE BetOfP4 = BetOfP4 * 2
+                    DISPLAY "Mise récuperer par le joueur 4"
+                    DISPLAY "******************************************"
+                    DISPLAY BetOfP1
+                    DISPLAY "******************************************"
+                 END-IF
+              ELSE IF DealerValue <= 21 THEN
+                 IF NbOfPlayer >= 1 THEN
+                    IF P1Value > 21 THEN
+                       DISPLAY "Le joueur 1 perd face au croupier"
+                       DISPLAY "Le joueur 1 perd sa mise"
+                       DISPLAY P1Value " VS " DealerValue
+                    ELSE IF P1Value <= DealerValue AND BJOfP1 = 0 THEN
+                       DISPLAY "Le joueur 1 perd face au croupier"
+                       DISPLAY "Le joueur 1 perd sa mise"
+                       DISPLAY P1Value " VS " DealerValue
+                    ELSE 
+                       DISPLAY "Le joueur 1 gagne face au croupier"
+                       DISPLAY "Le joueur 1 fait * 2 sur sa mise"
+                       COMPUTE BetOfP1 = BetOfP1 * 2
+                       DISPLAY "Mise récuperer par le joueur 1"
+                       DISPLAY "***************************************"
+                       DISPLAY BetOfP1
+                       DISPLAY "***************************************"
+                       DISPLAY P1Value " VS " DealerValue
+                    END-IF
+                 END-IF
+                 DISPLAY UserResponse
+                 IF NbOfPlayer >= 2 THEN
+                    IF P2Value > 21 THEN
+                       DISPLAY "Le joueur 2 perd face au croupier"
+                       DISPLAY "Le joueur 2 perd sa mise"
+                       DISPLAY P2Value " VS " DealerValue
+                    ELSE IF P2Value <= DealerValue AND BJOfP2 = 0 THEN
+                       DISPLAY "Le joueur 2 perd face au croupier"
+                       DISPLAY "Le joueur 2 perd sa mise"
+                       DISPLAY P2Value " VS " DealerValue
+                    ElSE 
+                       DISPLAY "Le joueur 2 gagne face au croupier"
+                       DISPLAY "Le joueur 2 fait * 2 sur sa mise"
+                       COMPUTE BetOfP2 = BetOfP2 * 2
+                       DISPLAY "Mise récuperer par le joueur 2"
+                       DISPLAY "***************************************"
+                       DISPLAY BetOfP2
+                       DISPLAY "***************************************"
+                       DISPLAY P2Value " VS " DealerValue
+                    END-IF
+                 END-IF
+                 DISPLAY UserResponse
+                 IF NbOfPlayer >= 3 THEN
+                    IF P3Value > 21 THEN
+                       DISPLAY "Le joueur 3 perd face au croupier"
+                       DISPLAY "Le joueur 3 perd sa mise"
+                       DISPLAY P3Value " VS " DealerValue
+                    ELSE IF P3Value <= DealerValue AND BJOfP3 = 0 THEN
+                       DISPLAY "Le joueur 3 perd face au croupier"
+                       DISPLAY "Le joueur 3 perd sa mise"
+                       DISPLAY P3Value " VS " DealerValue
+                    ELSE 
+                       DISPLAY "Le joueur 3 gagne face au croupier"
+                       DISPLAY "Le joueur 3 fait * 2 sur sa mise"
+                       COMPUTE BetOfP3 = BetOfP3 * 2
+                       DISPLAY "Mise récuperer par le joueur 3"
+                       DISPLAY "***************************************"
+                       DISPLAY BetOfP3
+                       DISPLAY "***************************************"
+                       DISPLAY P3Value " VS " DealerValue
+                    END-IF
+                 END-IF
+                 DISPLAY UserResponse
+                 IF NbOfPlayer >= 4 THEN
+                    IF P4Value > 21 THEN
+                       DISPLAY "Le joueur 4 perd face au croupier"
+                       DISPLAY "Le joueur 4 perd sa mise"
+                       DISPLAY P4Value " VS " DealerValue
+                    ELSE IF P4Value <= DealerValue AND BJOfP4 = 0 THEN
+                       DISPLAY "Le joueur 4 perd face au croupier"
+                       DISPLAY "Le joueur 4 perd sa mise"
+                       DISPLAY P4Value " VS " DealerValue
+                    ELSE 
+                       DISPLAY "Le joueur 4 gagne face au croupier"
+                       DISPLAY "Le joueur 4 fait * 2 sur sa mise"
+                       COMPUTE BetOfP4 = BetOfP4 * 2
+                       DISPLAY "Mise récuperer par le joueur 4"
+                       DISPLAY "***************************************"
+                       DISPLAY BetOfP4
+                       DISPLAY "***************************************"
+                       DISPLAY P4Value " VS " DealerValue
+                    END-IF
+                 END-IF
               END-IF.
-              *> marche pas :(
-              *>IF DealerValue < 22 THEN
-                 *>IF NbOfPlayer = 1 THEN *> si 1 joueur
-                    *>IF P1State = 1 THEN
-                       *>IF P1Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 1 perd face au croupier"
-                       *>ELSE IF P1Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 1 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                 *>END-IF
-                 *>IF NbOfPlayer = 2 THEN *> si 2 joueurs
-                    *>IF P1State = 1 THEN
-                       *>IF P1Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 1 perd face au croupier"
-                       *>ELSE IF P1Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 1 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                    *>IF P2State = 1 THEN
-                       *>IF P2Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 2 perd face au croupier"
-                       *>ELSE IF P2Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 2 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                 *>END-IF
-                 *>IF NbOfPlayer = 3 THEN *> si 3 joueurs
-                    *>IF P1State = 1 THEN
-                       *>IF P1Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 1 perd face au croupier"
-                       *>ELSE IF P1Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 1 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                    *>IF P2State = 1 THEN
-                       *>IF P2Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 2 perd face au croupier"
-                       *>ELSE IF P2Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 2 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                    *>IF P3State = 1 THEN 
-                       *>IF P3Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 3 perd face au croupier"
-                       *>ELSE IF P3Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 3 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                 *>IF NbOfPlayer = 4 THEN *> si 4 joueurs
-                    *>IF P1State = 1 THEN
-                       *>IF P1Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 1 perd face au croupier"
-                       *>ELSE IF P1Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 1 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                    *>IF P2State = 1 THEN
-                       *>IF P2Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 2 perd face au croupier"
-                       *>ELSE IF P2Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 2 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                    *>IF P3State = 1 THEN
-                       *>IF P3Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 3 perd face au croupier"
-                       *>ELSE IF P3Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 3 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-                    *>IF P4State = 1 THEN
-                       *>IF P4Value <= DealerValue THEN
-                          *>DISPLAY "Le joueur 4 perd face au croupier"
-                       *>ELSE IF P4Value > DealerValue THEN
-                          *>DISPLAY "Le joueur 4 gagne face au croupier"
-                       *>END-IF
-                    *>END-IF
-              *>END-IF.
-              IF NbOfPlayer >= 1 THEN
-                 DISPLAY "Valeur du joueur 1 : " P1Value
-              END-IF.
-              IF NbOfPlayer >= 2 THEN
-                 DISPLAY "Valeur du joueur 2 : " P2Value
-              END-IF.
-              IF NbOfPlayer >= 3 THEN
-                 DISPLAY "Valeur du joueur 3 : " P3Value
-              END-IF.
-              IF NbOfPlayer >= 4 THEN
-                 DISPLAY "Valeur du joueur 4 : " P4Value
-              END-IF.
-              DISPLAY "                                                "
-              DISPLAY "Si le croupier a plus"
-              DISPLAY "Ou autant qu'un joueur sous 21 il gagne"
-              DISPLAY '                                                '
-              DISPLAY "Si le croupier a dépassé 21 il perd"
-              DISPLAY "                                               "
-              DISPLAY "Si un joueur a plus que le croupier"
-              DISPLAY "Sans dépasser 21 il gagne".
          end program V2.
