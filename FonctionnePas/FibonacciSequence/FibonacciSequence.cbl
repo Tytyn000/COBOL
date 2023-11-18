@@ -21,8 +21,8 @@
            MOVE 1 TO Array(1).
            DISPLAY "Nb de chiffre a générer"
            ACCEPT NbOfNumbersToCreate
-           PERFORM CalculateSequence.
-           PERFORM DisplayNumbers.
+           PERFORM CalculateSequence
+           PERFORM DisplayNumbers
            DISPLAY "fin du calcul"
            goback.
        CalculateSequence.
