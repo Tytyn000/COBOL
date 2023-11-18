@@ -23,7 +23,7 @@
 
        01 NbCardValue2 PIC 9(1) VALUE 4.
        01 NbCardValue3 PIC 9(1) VALUE 4.
-       01 NbCardValue4 PIC 9(1) VALUE 0.
+       01 NbCardValue4 PIC 9(1) VALUE 4.
        01 NbCardValue5 PIC 9(1) VALUE 4.
        01 NbCardValue6 PIC 9(1) VALUE 4.
        01 NbCardValue7 PIC 9(1) VALUE 4.
