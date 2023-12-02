@@ -27,17 +27,16 @@
               DISPLAY "Nb trop élevé"
               STOP RUN
            END-IF.
-           DISPLAY 'Pour obtenir une réponse avec les valeurs "1" : '
-           DISPLAY 'Pour obtenir la valeur + phrase + espace "0" :'
+           DISPLAY 'Pour obtenir une réponse avec les valeurs "0" : '
+           DISPLAY 'Pour obtenir la valeur + phrase + espace "1" :'
            ACCEPT UserResponse
-           IF UserResponse = 1
+           IF UserResponse = 0
               PERFORM CalculateSequence
-           ELSE IF UserResponse = 0
+           ELSE IF UserResponse = 1
               PERFORM CalculateSequenceWithText
            ELSE
               PERFORM CalculateSequence
            END-IF.
-           
            goback.
        
        CalculateSequence.
@@ -59,5 +58,5 @@
               COMPUTE 2PreviousNb = PreviousNb
               COMPUTE PreviousNb = NbToShow
            END-PERFORM.
-           
+
        end program Sequence.
